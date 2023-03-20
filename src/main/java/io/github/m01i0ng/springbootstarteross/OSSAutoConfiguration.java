@@ -8,7 +8,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import io.github.m01i0ng.springbootstarteross.core.OSSProperties;
 import io.github.m01i0ng.springbootstarteross.core.OSSTemplate;
-import io.github.m01i0ng.springbootstarteross.server.OSSTemplateImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

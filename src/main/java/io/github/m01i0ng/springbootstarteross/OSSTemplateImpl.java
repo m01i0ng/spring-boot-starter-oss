@@ -1,4 +1,4 @@
-package io.github.m01i0ng.springbootstarteross.server;
+package io.github.m01i0ng.springbootstarteross;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
