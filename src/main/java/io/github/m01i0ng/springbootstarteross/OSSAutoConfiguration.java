@@ -25,12 +25,15 @@ public class OSSAutoConfiguration {
   public AmazonS3 ossClient(OSSProperties properties) {
     ClientConfiguration clientConfiguration = new ClientConfiguration();
     clientConfiguration.setMaxConnections(properties.getMaxConnections());
+
     EndpointConfiguration endpointConfiguration = new EndpointConfiguration(
         properties.getEndpoint(), properties.getRegion());
+
     BasicAWSCredentials credentials = new BasicAWSCredentials(properties.getAccessKey(),
         properties.getSecretKey());
     AWSStaticCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(
         credentials);
+
     return AmazonS3Client.builder()
         .withEndpointConfiguration(endpointConfiguration)
         .withClientConfiguration(clientConfiguration)
