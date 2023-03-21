@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 public interface OSSTemplate {
 
@@ -44,12 +45,37 @@ public interface OSSTemplate {
   /**
    * 上传文件
    *
+   * @param bucketName   bucket 名字
+   * @param objectName   对象名字
+   * @param stream       文件流
+   * @param contentType  文件类型
+   * @param userMetadata 用户自定义元数据
+   * @throws Exception 异常
+   */
+  void putObject(String bucketName, String objectName, InputStream stream, String contentType,
+      Map<String, String> userMetadata) throws Exception;
+
+  /**
+   * 上传文件
+   *
    * @param bucketName bucket 名字
    * @param objectName 对象名字
    * @param stream     文件流
    * @throws Exception 异常
    */
   void putObject(String bucketName, String objectName, InputStream stream) throws Exception;
+
+  /**
+   * 上传文件
+   *
+   * @param bucketName   bucket 名字
+   * @param objectName   对象名字
+   * @param stream       文件流
+   * @param userMetadata 用户自定义元数据
+   * @throws Exception 异常
+   */
+  void putObject(String bucketName, String objectName, InputStream stream,
+      Map<String, String> userMetadata) throws Exception;
 
   /**
    * 获取文件

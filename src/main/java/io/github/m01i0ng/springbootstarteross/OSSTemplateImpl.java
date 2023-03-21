@@ -10,6 +10,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.util.IOUtils;
 import io.github.m01i0ng.springbootstarteross.core.OSSTemplate;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -17,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -60,12 +62,15 @@ public class OSSTemplateImpl implements OSSTemplate {
   }
 
   @SneakyThrows
-  private PutObjectResult putObject(String bucketName, String objectName, InputStream stream,
-      long size, String contentType) {
+  private PutObjectResult put(String bucketName, String objectName, InputStream stream,
+      long size, String contentType, Map<String, String> userMetadata) {
     byte[] bytes = IOUtils.toByteArray(stream);
     ObjectMetadata objectMetadata = new ObjectMetadata();
     objectMetadata.setContentType(contentType);
     objectMetadata.setContentLength(size);
+    if (userMetadata != null && !userMetadata.isEmpty()) {
+      objectMetadata.setUserMetadata(userMetadata);
+    }
     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
     return amazonS3.putObject(bucketName, objectName, byteArrayInputStream, objectMetadata);
   }
@@ -82,7 +87,31 @@ public class OSSTemplateImpl implements OSSTemplate {
   @Override
   public void putObject(String bucketName, String objectName, InputStream stream,
       String contentType) throws Exception {
-    putObject(bucketName, objectName, stream, stream.available(), contentType);
+    put(bucketName, objectName, stream, stream.available(), contentType, null);
+  }
+
+  /**
+   * 上传文件
+   *
+   * @param bucketName   bucket 名字
+   * @param objectName   对象名字
+   * @param stream       文件流
+   * @param contentType  文件类型
+   * @param userMetadata 用户自定义元数据
+   * @throws Exception 异常
+   */
+  @Override
+  public void putObject(String bucketName, String objectName, InputStream stream,
+      String contentType, Map<String, String> userMetadata) throws Exception {
+    put(bucketName, objectName, stream, stream.available(), contentType, userMetadata);
+  }
+
+  private static String getContentType(InputStream stream) throws IOException {
+    String contentType = URLConnection.guessContentTypeFromStream(stream);
+    if (contentType != null) {
+      contentType = "application/octet-stream";
+    }
+    return contentType;
   }
 
   /**
@@ -95,12 +124,25 @@ public class OSSTemplateImpl implements OSSTemplate {
    */
   @Override
   public void putObject(String bucketName, String objectName, InputStream stream) throws Exception {
-    String contentType = URLConnection.guessContentTypeFromStream(stream);
-    if (contentType != null) {
-      contentType = "application/octet-stream";
-    }
+    String contentType = getContentType(stream);
 
-    putObject(bucketName, objectName, stream, contentType);
+    put(bucketName, objectName, stream, stream.available(), contentType, null);
+  }
+
+  /**
+   * 上传文件
+   *
+   * @param bucketName   bucket 名字
+   * @param objectName   对象名字
+   * @param stream       文件流
+   * @param userMetadata 用户自定义元数据
+   * @throws Exception 异常
+   */
+  @Override
+  public void putObject(String bucketName, String objectName, InputStream stream,
+      Map<String, String> userMetadata) throws Exception {
+    String contentType = getContentType(stream);
+    put(bucketName, objectName, stream, stream.available(), contentType, userMetadata);
   }
 
   /**
